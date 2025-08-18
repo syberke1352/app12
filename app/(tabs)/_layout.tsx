@@ -1,7 +1,10 @@
-import { useAuth } from '@/contexts/AuthContext';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { router } from 'expo-router';
-import { BookOpen, Building2, CloudUpload, Home, HousePlus, ListChecks, Monitor, Plus, Shield, Trophy, User, Zap } from 'lucide-react-native';
+{"code":"rate-lding2, Clodl ot "U"rt teg'":"Ynaent
+aussfAn'   u
+o
+cOrh a{   neri
+oe:n
+ oees zeg i   n nu 
+ /e/   falLome+H,m".= 'eh-",i,  t 6y  " tb     Building2, CloudUpload, Chrome as Home, HousePlus, ListChecks, Monitor, Plus, Shield, Trophy, User, Zap } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { Dimensions, Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
