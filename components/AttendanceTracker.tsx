@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
 import { supabase } from '@/lib/supabase';
-import { Calendar, CheckCircle, XCircle, Clock } from 'lucide-react-native';
+import { Calendar, CircleCheck as CheckCircle, Circle as XCircle, Clock } from 'lucide-react-native';
 
 interface AttendanceTrackerProps {
   studentId: string;
