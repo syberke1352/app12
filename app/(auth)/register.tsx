@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { Alert, Dimensions, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Animated, { FadeInDown, FadeInUp, SlideInLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AppLogo } from '@/components/AppLogo';
 const { width, height } = Dimensions.get('window');
 
 const roles = [
@@ -50,7 +51,7 @@ export default function RegisterScreen() {
 
   return (
     <LinearGradient
-      colors={['#10B981', '#3B82F6', '#8B5CF6']}
+      colors={['#0F172A', '#1E293B', '#334155']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -67,7 +68,7 @@ export default function RegisterScreen() {
 </Animated.View>
  <Animated.View entering={FadeInUp.delay(200)} style={styles.header}>
   
-            <BookOpen size={48} color="white" />
+            <AppLogo size="medium" />
             <Text style={styles.title}>Buat Akun Baru</Text>
             <Text style={styles.subtitle}>Bergabung dengan komunitas pembelajaran Quran</Text>
 
@@ -75,7 +76,7 @@ export default function RegisterScreen() {
 
    <Animated.View entering={FadeInDown.delay(400)} style={styles.form}>
             <View style={styles.inputContainer}>
-              <User size={20} color="#10B981" />
+              <User size={20} color="#3B82F6" />
               <TextInput
                 style={styles.input}
                 placeholder="Nama Lengkap"
@@ -86,7 +87,7 @@ export default function RegisterScreen() {
             </View>
 
             <View style={styles.inputContainer}>
-              <Mail size={20} color="#10B981" />
+              <Mail size={20} color="#3B82F6" />
               <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -99,7 +100,7 @@ export default function RegisterScreen() {
             </View>
 
             <View style={styles.inputContainer}>
-              <Lock size={20} color="#10B981" />
+              <Lock size={20} color="#3B82F6" />
               <TextInput
                 style={styles.input}
                 placeholder="Password (min. 6 karakter)"
@@ -118,7 +119,7 @@ export default function RegisterScreen() {
                 <Text style={styles.dropdownText}>
                   {roles.find(r => r.value === role)?.label || 'Pilih Role'}
                 </Text>
-                <ChevronDown size={20} color="#10B981" />
+                <ChevronDown size={20} color="#3B82F6" />
               </Pressable>
               
               {showRoleDropdown && (
@@ -153,7 +154,7 @@ export default function RegisterScreen() {
 
             <Pressable onPress={() => router.push('/(auth)/login')}>
               <Text style={styles.linkText}>
-                Sudah punya akun? <Text style={styles.linkBold}>Masuk disini</Text>
+                Sudah punya akun? <Text style={styles.linkBold}>Masuk di sini</Text>
               </Text>
             </Pressable>
             </Animated.View>
@@ -199,7 +200,8 @@ header: {
     fontSize: Math.min(32, width * 0.08),
     fontWeight: 'bold',
     color: 'white',
-    marginBottom: 12,
+    marginTop: 16,
+    marginBottom: 8,
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
@@ -276,13 +278,13 @@ header: {
     color: '#1F2937',
   },
  button: {
-    backgroundColor: '#10B981',
+    backgroundColor: '#3B82F6',
     padding: Math.max(16, width * 0.04),
     borderRadius: 16,
     alignItems: 'center',
     marginTop: 8,
     minHeight: 56,
-    shadowColor: '#10B981',
+    shadowColor: '#3B82F6',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -304,7 +306,7 @@ header: {
     fontWeight: '500',
   },
   linkBold: {
-    color: '#10B981',
+    color: '#3B82F6',
     fontWeight: 'bold',
   },
 });

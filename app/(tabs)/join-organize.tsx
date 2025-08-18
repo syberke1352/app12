@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Alert, ActivityIndicator } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { router } from 'expo-router';
-import { Users, Key, CircleCheck as CheckCircle } from 'lucide-react-native';
+import { Users, Key, CircleCheck as CheckCircle, RefreshCw } from 'lucide-react-native';
 
 export default function JoinOrganizeScreen() {
   const { profile, refreshProfile } = useAuth();
@@ -39,16 +39,20 @@ export default function JoinOrganizeScreen() {
       }
 
       // Update user's organize_id
-      const { error: updateError } = await supabase
+      const { data: updateData, error: updateError } = await supabase
         .from('users')
         .update({ organize_id: organizeData.id })
-        .eq('id', profile?.id);
+        .eq('id', profile?.id)
+        .select();
 
       if (updateError) {
+        console.error('Update error:', updateError);
         Alert.alert('Error', 'Gagal bergabung dengan kelas');
         setLoading(false);
         return;
       }
+
+      console.log('Update successful:', updateData);
 
       // Initialize siswa_poin if not exists
       const { data: existingPoints } = await supabase
@@ -58,7 +62,7 @@ export default function JoinOrganizeScreen() {
         .single();
 
       if (!existingPoints) {
-        await supabase
+        const { error: pointsError } = await supabase
           .from('siswa_poin')
           .insert([{
             siswa_id: profile?.id,
@@ -66,6 +70,10 @@ export default function JoinOrganizeScreen() {
             poin_hafalan: 0,
             poin_quiz: 0,
           }]);
+
+        if (pointsError) {
+          console.error('Points creation error:', pointsError);
+        }
       }
 
       Alert.alert(
@@ -74,9 +82,10 @@ export default function JoinOrganizeScreen() {
         [
           { 
             text: 'OK', 
-            onPress: () => {
-              refreshProfile();
-              router.replace('/(tabs)');
+            onPress: async () => {
+              await refreshProfile();
+              // Force a complete refresh by navigating to index first
+              router.replace('/');
             }
           }
         ]
@@ -88,6 +97,11 @@ export default function JoinOrganizeScreen() {
     }
   };
 
+  const handleRefresh = async () => {
+    setLoading(true);
+    await refreshProfile();
+    setLoading(false);
+  };
   // If already in organize, show success state
   if (profile?.organize_id) {
     return (
@@ -103,6 +117,15 @@ export default function JoinOrganizeScreen() {
             onPress={() => router.replace('/(tabs)')}
           >
             <Text style={styles.backButtonText}>Kembali ke Beranda</Text>
+          </Pressable>
+          
+          <Pressable 
+            style={styles.refreshButton}
+            onPress={handleRefresh}
+            disabled={loading}
+          >
+            <RefreshCw size={16} color="#3B82F6" />
+            <Text style={styles.refreshButtonText}>Refresh Data</Text>
           </Pressable>
         </View>
       </View>
@@ -138,6 +161,7 @@ export default function JoinOrganizeScreen() {
           onPress={joinOrganize}
           disabled={loading}
         >
+          {loading && <ActivityIndicator size="small" color="white" style={{ marginRight: 8 }} />}
           <Text style={styles.joinButtonText}>
             {loading ? 'Memproses...' : 'Gabung Kelas'}
           </Text>
@@ -270,5 +294,20 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  refreshButton: {
+    backgroundColor: '#E0F2FE',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 16,
+  },
+  refreshButtonText: {
+    color: '#3B82F6',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

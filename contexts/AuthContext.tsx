@@ -48,6 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (user) {
       const profileData = await getProfile(user.id);
       setProfile(profileData);
+      console.log('Profile refreshed:', profileData);
     }
   };
 

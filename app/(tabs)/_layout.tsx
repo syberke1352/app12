@@ -1,10 +1,11 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { router } from 'expo-router';
-import { BookOpen, Building2, CloudUpload, Home, HousePlus, ListChecks, Monitor, Plus, Shield, Trophy, User } from 'lucide-react-native';
+import { BookOpen, Building2, CloudUpload, Home, HousePlus, ListChecks, Monitor, Plus, Shield, Trophy, User, Zap } from 'lucide-react-native';
 import React, { useEffect } from 'react';
-import { Dimensions, Platform } from 'react-native';
+import { Dimensions, Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get('window'); 
 
@@ -82,44 +83,114 @@ export default function TabsLayout() {
 
   const tabs = getTabsForRole();
 
+  const renderTabIcon = (IconComponent: any, focused: boolean, color: string, size: number, isSpecial = false) => {
+    if (isSpecial && focused) {
+      return (
+        <View style={{
+          width: 56,
+          height: 56,
+          borderRadius: 28,
+          marginTop: -20,
+          shadowColor: '#3B82F6',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 8,
+          elevation: 8,
+        }}>
+          <LinearGradient
+            colors={['#3B82F6', '#6366F1']}
+            style={{
+              flex: 1,
+              borderRadius: 28,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <IconComponent size={28} color="white" />
+          </LinearGradient>
+        </View>
+      );
+    }
+    
+    if (isSpecial) {
+      return (
+        <View style={{
+          width: 48,
+          height: 48,
+          borderRadius: 24,
+          backgroundColor: '#F1F5F9',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginTop: -10,
+        }}>
+          <IconComponent size={24} color="#64748B" />
+        </View>
+      );
+    }
+
+    return <IconComponent size={size} color={color} />;
+  };
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#10B981',
-        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarActiveTintColor: '#3B82F6',
+        tabBarInactiveTintColor: '#64748B',
         tabBarStyle: {
           backgroundColor: 'white',
-           borderTopWidth: 0,
-          paddingBottom: Platform.OS === 'ios' ? insets.bottom + 8 : 12,
-          paddingTop: 12,
-          height: Platform.OS === 'ios' ? 80 + insets.bottom : 80,
+          borderTopWidth: 0,
+          paddingBottom: Platform.OS === 'ios' ? insets.bottom + 12 : 16,
+          paddingTop: 16,
+          height: Platform.OS === 'ios' ? 90 + insets.bottom : 90,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
           elevation: 10,
-          
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
         },
         tabBarLabelStyle: {
-       
           fontWeight: '600',
-         fontSize: width < 380 ? 10 : 12,
-           marginTop: 4,
-              },
+          fontSize: width < 380 ? 10 : 12,
+          marginTop: 6,
+        },
         tabBarIconStyle: {
-          marginTop: 4,
+          marginTop: 6,
         },
       }}
     >
-      {tabs.map((tab) => (
+      {tabs.map((tab, index) => {
+        const isSpecialTab = tab.name === 'Setoran' || tab.name === 'Penilaian';
+        
+        return (
         <Tab.Screen
           key={tab.name} 
           name={tab.name}
           component={tab.component}
           options={{
-            tabBarIcon: ({ size, color }) => (
-              <tab.icon size={size} color={color} />
+            tabBarIcon: ({ size, color, focused }) => 
+              renderTabIcon(tab.icon, focused, color, size, isSpecialTab),
+            tabBarLabel: isSpecialTab && Platform.OS === 'ios' ? '' : tab.name,
+            tabBarLabelStyle: {
+              ...styles.tabLabel,
+              opacity: isSpecialTab ? 0 : 1,
+            },
+          }}
+        />
+        );
+      })}
+    </Tab.Navigator>
+  );
+}
+
+const styles = {
+  tabLabel: {
+    fontWeight: '600' as const,
+    fontSize: width < 380 ? 10 : 12,
+    marginTop: 6,
+  },
+};
             ),
           }}
         />

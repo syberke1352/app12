@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, Dimensions } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
+import { AppLogo } from '@/components/AppLogo';
+import { AdBanner } from '@/components/AdBanner';
 
 import { supabase } from '@/lib/supabase';
 import { router } from 'expo-router';
@@ -225,23 +227,32 @@ export default function HomeScreen() {
     >
       {/* Header */}
       <Animated.View entering={FadeInUp}>
-        <LinearGradient
-          colors={['#10B981', '#3B82F6', '#8B5CF6']}
-          style={styles.header}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        >
-          <View style={styles.headerContent}>
-            <View>
-              <Text style={styles.greeting}>{getGreeting()}</Text>
-              <Text style={styles.userName}>{profile?.name}</Text>
-              <Text style={styles.userRole}>{getRoleName(profile?.role || '')}</Text>
+        <View style={styles.header}>
+          <LinearGradient
+            colors={['#0F172A', '#1E293B', '#334155']}
+            style={styles.headerGradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            <View style={styles.headerContent}>
+              <View style={styles.headerLeft}>
+                <AppLogo size="small" showText={false} />
+                <View style={styles.greetingContainer}>
+                  <Text style={styles.greeting}>{getGreeting()}</Text>
+                  <Text style={styles.userName}>{profile?.name}</Text>
+                  <Text style={styles.userRole}>{getRoleName(profile?.role || '')}</Text>
+                </View>
+              </View>
+              <View style={styles.headerRight}>
+                <View style={styles.profilePicture}>
+                  <Text style={styles.profileInitial}>
+                    {profile?.name?.charAt(0).toUpperCase()}
+                  </Text>
+                </View>
+              </View>
             </View>
-            <View style={styles.headerIcon}>
-              <BookOpen size={32} color="white" />
-            </View>
-          </View>
-        </LinearGradient>
+          </LinearGradient>
+        </View>
       </Animated.View>
 
       <View style={styles.content}>
@@ -405,6 +416,9 @@ export default function HomeScreen() {
           )}
         </Animated.View>
 
+        {/* Ad Banner */}
+        <AdBanner type="wakaf" />
+
         {/* Today's Quote */}
         <Animated.View entering={FadeInUp.delay(600)} style={styles.quoteCard}>
           <Star size={20} color="#F59E0B" />
@@ -425,21 +439,50 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
   header: {
-    paddingBottom: 32,
-    paddingHorizontal: 24,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    shadowColor: '#10B981',
+    shadowColor: '#0F172A',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
-    
+    elevation: 10,
+  },
+  headerGradient: {
+    paddingBottom: 32,
+    paddingHorizontal: 24,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
   },
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 10,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    flex: 1,
+  },
+  headerRight: {
+    alignItems: 'center',
+  },
+  greetingContainer: {
+    flex: 1,
+  },
+  profilePicture: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.3)',
+  },
+  profileInitial: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   greeting: {
     fontSize: Math.min(16, width * 0.04),
@@ -460,17 +503,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontWeight: '500',
   },
-  headerIcon: {
-    width: 64,
-    height: 64,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   content: {
     padding: 20,
-    marginTop: -16,
+    marginTop: -24,
   },
   statsContainer: {
     flexDirection: 'row',

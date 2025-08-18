@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, Alert, Modal } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { StudentDetailModal } from '@/components/StudentDetailModal';
-import { Users, Plus, Settings, UserPlus, Copy, Eye, Calendar, ChartBar as BarChart3 } from 'lucide-react-native';
+import { AttendanceTracker } from '@/components/AttendanceTracker';
+import { Users, Plus, Settings, UserPlus, Copy, Eye, Calendar, ChartBar as BarChart3, UserMinus, Trash2, X } from 'lucide-react-native';
 
 interface OrganizeData {
   id: string;
@@ -44,6 +45,8 @@ export default function OrganizeScreen() {
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
   const [selectedStudentName, setSelectedStudentName] = useState<string>('');
   const [showStudentDetail, setShowStudentDetail] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [studentToRemove, setStudentToRemove] = useState<StudentData | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -208,6 +211,36 @@ export default function OrganizeScreen() {
     setSelectedStudentId(studentId);
     setSelectedStudentName(studentName);
     setShowStudentDetail(true);
+  };
+
+  const confirmRemoveStudent = (student: StudentData) => {
+    setStudentToRemove(student);
+    setShowRemoveModal(true);
+  };
+
+  const removeStudent = async () => {
+    if (!studentToRemove) return;
+
+    try {
+      // Remove student from organize
+      const { error } = await supabase
+        .from('users')
+        .update({ organize_id: null })
+        .eq('id', studentToRemove.id);
+
+      if (error) {
+        Alert.alert('Error', 'Gagal mengeluarkan siswa dari kelas');
+        return;
+      }
+
+      Alert.alert('Sukses', `${studentToRemove.name} berhasil dikeluarkan dari kelas`);
+      setShowRemoveModal(false);
+      setStudentToRemove(null);
+      fetchStudents(organize!.id);
+      fetchOrganizeStats(organize!.id);
+    } catch (error) {
+      Alert.alert('Error', 'Terjadi kesalahan saat mengeluarkan siswa');
+    }
   };
 
   useEffect(() => {
@@ -376,27 +409,45 @@ export default function OrganizeScreen() {
           ) : (
             <View style={styles.studentsList}>
               {students.map((student) => (
-                <View key={student.id} style={styles.studentCard}>
-                  <View style={styles.studentAvatar}>
-                    <Text style={styles.studentInitial}>
-                      {student.name.charAt(0).toUpperCase()}
-                    </Text>
+                <View key={student.id}>
+                  <View style={styles.studentCard}>
+                    <View style={styles.studentAvatar}>
+                      <Text style={styles.studentInitial}>
+                        {student.name.charAt(0).toUpperCase()}
+                      </Text>
+                    </View>
+                    
+                    <View style={styles.studentInfo}>
+                      <Text style={styles.studentName}>{student.name}</Text>
+                      <Text style={styles.studentEmail}>{student.email}</Text>
+                      <Text style={styles.joinDate}>
+                        Bergabung {new Date(student.created_at).toLocaleDateString('id-ID')}
+                      </Text>
+                    </View>
+
+                    <View style={styles.studentActions}>
+                      <Pressable 
+                        style={styles.viewButton}
+                        onPress={() => viewStudentDetail(student.id, student.name)}
+                      >
+                        <Eye size={16} color="#6B7280" />
+                      </Pressable>
+                      
+                      <Pressable 
+                        style={styles.removeButton}
+                        onPress={() => confirmRemoveStudent(student)}
+                      >
+                        <UserMinus size={16} color="#EF4444" />
+                      </Pressable>
+                    </View>
                   </View>
                   
-                  <View style={styles.studentInfo}>
-                    <Text style={styles.studentName}>{student.name}</Text>
-                    <Text style={styles.studentEmail}>{student.email}</Text>
-                    <Text style={styles.joinDate}>
-                      Bergabung {new Date(student.created_at).toLocaleDateString('id-ID')}
-                    </Text>
-                  </View>
-
-                  <Pressable 
-                    style={styles.viewButton}
-                    onPress={() => viewStudentDetail(student.id, student.name)}
-                  >
-                    <Eye size={16} color="#6B7280" />
-                  </Pressable>
+                  {/* Attendance Tracker */}
+                  <AttendanceTracker 
+                    studentId={student.id}
+                    studentName={student.name}
+                    isTeacher={true}
+                  />
                 </View>
               ))}
             </View>
@@ -411,6 +462,49 @@ export default function OrganizeScreen() {
         onClose={() => setShowStudentDetail(false)}
         isTeacher={true}
       />
+
+      {/* Remove Student Modal */}
+      <Modal
+        visible={showRemoveModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowRemoveModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Trash2 size={24} color="#EF4444" />
+              <Text style={styles.modalTitle}>Keluarkan Siswa</Text>
+              <Pressable onPress={() => setShowRemoveModal(false)}>
+                <X size={24} color="#6B7280" />
+              </Pressable>
+            </View>
+            
+            <Text style={styles.modalText}>
+              Apakah Anda yakin ingin mengeluarkan {studentToRemove?.name} dari kelas?
+            </Text>
+            <Text style={styles.modalSubtext}>
+              Siswa akan kehilangan akses ke kelas dan semua data setoran akan tetap tersimpan.
+            </Text>
+
+            <View style={styles.modalActions}>
+              <Pressable 
+                style={styles.modalCancelButton}
+                onPress={() => setShowRemoveModal(false)}
+              >
+                <Text style={styles.modalCancelText}>Batal</Text>
+              </Pressable>
+              
+              <Pressable 
+                style={styles.modalConfirmButton}
+                onPress={removeStudent}
+              >
+                <Text style={styles.modalConfirmText}>Keluarkan</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }
@@ -728,6 +822,10 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     marginTop: 4,
   },
+  studentActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
   viewButton: {
     width: 32,
     height: 32,
@@ -735,5 +833,78 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3F4F6',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  removeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#FEE2E2',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1F2937',
+    flex: 1,
+    textAlign: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    color: '#374151',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  modalSubtext: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  modalCancelButton: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: '#F3F4F6',
+    alignItems: 'center',
+  },
+  modalCancelText: {
+    color: '#6B7280',
+    fontWeight: '600',
+  },
+  modalConfirmButton: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: '#EF4444',
+    alignItems: 'center',
+  },
+  modalConfirmText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

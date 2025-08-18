@@ -2,9 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable, Dimensions, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BookOpen, Users, Award, PenTool } from 'lucide-react-native';
+import { BookOpen, Users, Award, PenTool, Star } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeInUp, SlideInLeft, SlideInRight } from 'react-native-reanimated';
+import { AppLogo } from '@/components/AppLogo';
 
 const { width, height } = Dimensions.get('window');
 
@@ -15,7 +16,7 @@ export default function WelcomeScreen() {
     <View style={styles.container}>
       {/* Background Gradient */}
       <LinearGradient
-        colors={['#10B981', '#3B82F6', '#8B5CF6']}
+        colors={['#0F172A', '#1E293B', '#334155']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -28,10 +29,7 @@ export default function WelcomeScreen() {
       >
         {/* Header */}
         <Animated.View entering={FadeInUp.delay(300)} style={styles.header}>
-          <View style={styles.logoContainer}>
-            <BookOpen size={64} color="white" strokeWidth={2.5} />
-          </View>
-          <Text style={styles.title}>IQRO</Text>
+          <AppLogo size="large" animated={true} />
           <Text style={styles.subtitle}>
             Platform Pembelajaran Quran Digital untuk Hafalan dan Murojaah
           </Text>
@@ -98,22 +96,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: height * 0.05,
   },
-  logoContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: Math.min(42, width * 0.105),
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 12,
-    letterSpacing: 2,
-  },
   subtitle: {
     fontSize: Math.min(16, width * 0.04),
     color: 'white',
@@ -122,6 +104,7 @@ const styles = StyleSheet.create({
     lineHeight: Math.min(24, width * 0.06),
     paddingHorizontal: 20,
     fontWeight: '500',
+    marginTop: 16,
   },
   features: {
     gap: Math.max(16, height * 0.02),

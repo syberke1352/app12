@@ -4,6 +4,8 @@ import { Award, BookOpen, LogOut, Settings, Shield, Trophy, User } from 'lucide-
 import React, { useState, useEffect } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { supabase } from '@/lib/supabase';
+import { TeamSection } from '@/components/TeamSection';
+import { AppLogo } from '@/components/AppLogo';
 
 export default function ProfileScreen() {
   const { profile, user, signOut } = useAuth();
@@ -154,19 +156,17 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>Tentang Aplikasi</Text>
         
         <View style={styles.appInfoCard}>
-          <BookOpen size={44} color="#10B981" style={{ marginBottom: 12 }} />
-          <Text style={styles.appName}>Ngaji App</Text>
+          <AppLogo size="medium" showText={false} />
+          <Text style={styles.appName}>IQRO</Text>
           <Text style={styles.appVersion}>Versi 1.0.0</Text>
-          <View style={styles.authorContainer}>
-            <Text style={styles.madeBy}>Dirancang dan dibangun oleh:</Text>
-            <Text style={styles.authorName}>Akra Mujjaman Raton</Text>
-            <Text style={styles.authorName}>Qiageng Berke Jaisyurrohman</Text>
-          </View>
           <Text style={styles.appDescription}>
             Platform pembelajaran Quran digital untuk hafalan, murojaah, dan monitoring perkembangan siswa.
           </Text>
         </View>
       </View>
+
+      {/* Team Section */}
+      <TeamSection />
     </ScrollView>
   );
 }
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#1F2937',
-    marginTop: 12,
+    marginTop: 16,
   },
   appVersion: {
     fontSize: 14,
@@ -332,20 +332,5 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     textAlign: 'center',
     lineHeight: 20,
-  },
-  authorContainer: {
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  madeBy: {
-    fontSize: 14,
-    color: '#4B5563',
-    fontStyle: 'italic',
-    marginBottom: 2,
-  },
-  authorName: {
-    fontSize: 14,
-    color: '#111827',
-    fontWeight: '600',
   },
 });

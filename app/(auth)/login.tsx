@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { Alert, Dimensions, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Animated, { FadeInDown, FadeInUp, SlideInLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AppLogo } from '@/components/AppLogo';
 
 const { width, height } = Dimensions.get('window');
 
@@ -36,7 +37,7 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#10B981', '#3B82F6', '#8B5CF6']}
+        colors={['#0F172A', '#1E293B', '#334155']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -53,16 +54,14 @@ export default function LoginScreen() {
         </Animated.View>
 
         <Animated.View entering={FadeInUp.delay(200)} style={styles.header}>
-          <View style={styles.logoContainer}>
-            <BookOpen size={48} color="white" />
-          </View>
+          <AppLogo size="medium" />
           <Text style={styles.title}>Masuk ke Akun</Text>
           <Text style={styles.subtitle}>Silakan masuk untuk melanjutkan</Text>
         </Animated.View>
 
         <Animated.View entering={FadeInDown.delay(400)} style={styles.form}>
           <View style={styles.inputContainer}>
-            <Mail size={20} color="#10B981" />
+            <Mail size={20} color="#3B82F6" />
             <TextInput
               style={styles.input}
               placeholder="Email"
@@ -75,7 +74,7 @@ export default function LoginScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Lock size={20} color="#10B981" />
+            <Lock size={20} color="#3B82F6" />
             <TextInput
               style={styles.input}
               placeholder="Password"
@@ -98,7 +97,7 @@ export default function LoginScreen() {
 
           <Pressable onPress={() => router.push('/(auth)/register')}>
             <Text style={styles.linkText}>
-              Belum punya akun? <Text style={styles.linkBold}>Daftar disini</Text>
+              Belum punya akun? <Text style={styles.linkBold}>Daftar di sini</Text>
             </Text>
           </Pressable>
         </Animated.View>
@@ -135,25 +134,13 @@ const styles = StyleSheet.create({
     marginTop: height * 0.04,
     marginBottom: height * 0.03,
   },
-  logoContainer: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
 
-  },
   title: {
     fontSize: Math.min(32, width * 0.08),
     fontWeight: 'bold',
     color: 'white',
-    marginBottom: 12,
+    marginTop: 16,
+    marginBottom: 8,
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
@@ -194,13 +181,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   button: {
-    backgroundColor: '#10B981',
+    backgroundColor: '#3B82F6',
     padding: Math.max(16, width * 0.04),
     borderRadius: 16,
     alignItems: 'center',
     marginTop: 8,
     minHeight: 56,
-    shadowColor: '#10B981',
+    shadowColor: '#3B82F6',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -222,7 +209,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   linkBold: {
-    color: '#10B981',
+    color: '#3B82F6',
     fontWeight: 'bold',
   },
 });
